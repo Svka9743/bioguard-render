@@ -2,31 +2,23 @@ services:
   - type: web
     name: bioguard-detector
     env: python
-    branch: master
-    buildCommand: "pip install -r detector_service/requirements.txt"
-    startCommand: "gunicorn detector_service.app:app --bind 0.0.0.0:$PORT --workers 2"
-    public: true
     plan: free
+    buildCommand: pip install -r detector_service/requirements.txt
+    startCommand: gunicorn detector_service.app:app
+    rootDir: .
 
-  - type: background
+  - type: web
     name: bioguard-ingest
     env: python
-    branch: master
-    buildCommand: "pip install -r data_pipeline/requirements.txt"
-    startCommand: "python data_pipeline/ingest_server.py"
-    public: true
     plan: free
+    buildCommand: pip install -r data_pipeline/requirements.txt
+    startCommand: python data_pipeline/ingest_server.py
+    rootDir: .
 
   - type: web
     name: bioguard-automation
     env: python
-    branch: master
-    buildCommand: "pip install -r automations/requirements.txt"
-    startCommand: "gunicorn automations.block_service:app --bind 0.0.0.0:$PORT --workers 1"
-    public: true
     plan: free
-
-databases:
-  - name: bioguard-db
-    engine: postgres
-    plan: free
+    buildCommand: pip install -r automations/requirements.txt
+    startCommand: python automations/block_service.py
+    rootDir: .
