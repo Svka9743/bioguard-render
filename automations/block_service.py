@@ -10,16 +10,15 @@ def block():
     score = data.get("score")
 
     if not ip:
-        return jsonify({"error":"no ip"}), 400
+        return jsonify({"error": "no ip"}), 400
 
     # For testing: append blocked IP to a file
     with open("blocked_ips.log", "a") as f:
         f.write(f"{ip},{score}\n")
 
-    return jsonify({"status":"logged","ip":ip})
+    return jsonify({"status": "logged", "ip": ip})
 
 if __name__ == "__main__":
-import os
-port = int(os.environ.get("PORT", 9000))
-app.run(host="0.0.0.0", port=port)
-
+    import os
+    port = int(os.environ.get("PORT", 9000))
+    app.run(host="0.0.0.0", port=port)
