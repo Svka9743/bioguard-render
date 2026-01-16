@@ -2,7 +2,7 @@ flask
 requests
 torch
 joblib
-scikit-learn
+scikit-learn==1.7.2
 numpy
 gunicorn
 psycopg2-binary
