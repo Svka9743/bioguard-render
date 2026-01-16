@@ -24,7 +24,7 @@ def ingest():
                     "timestamp": e.get("timestamp")
                 }
             }
-            r = requests.post(DETECTOR_URL, json=payload, timeout=5)
+            r = requests.post(DETECTOR_URL, json=payload, timeout=20)
             results.append(r.json())
 
         except Exception as ex:
