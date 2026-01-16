@@ -19,4 +19,7 @@ def block():
     return jsonify({"status":"logged","ip":ip})
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=9000)
+import os
+port = int(os.environ.get("PORT", 9000))
+app.run(host="0.0.0.0", port=port)
+
