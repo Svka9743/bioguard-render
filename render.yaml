@@ -4,7 +4,7 @@ services:
     env: python
     plan: free
     buildCommand: pip install -r detector_service/requirements.txt
-    startCommand: gunicorn detector_service.app:app
+    startCommand: gunicorn detector_service.app:app --workers 1 --timeout 120
     rootDir: .
 
   - type: web
