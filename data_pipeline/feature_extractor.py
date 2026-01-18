@@ -5,11 +5,16 @@ def time_of_day_bucket(ts):
         dt = datetime.datetime.fromisoformat(ts.replace("Z","+00:00"))
     else:
         dt = datetime.datetime.utcfromtimestamp(ts/1000)
+
     h = dt.hour
-    if 0 <= h < 6: return [1,0,0,0]
-    if 6 <= h < 12: return [0,1,0,0]
-    if 12 <= h < 18: return [0,0,1,0]
-    return [0,0,0,1]
+
+    # Night (00–06), Day (06–18), Evening (18–24)
+    if 0 <= h < 6:
+        return [1, 0, 0]
+    elif 6 <= h < 18:
+        return [0, 1, 0]
+    else:
+        return [0, 0, 1]
 
 def extract_features(eve_json):
     src = eve_json.get("src_ip","")
