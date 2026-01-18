@@ -3,7 +3,7 @@ from feature_extractor import extract_features
 import requests
 import os
 
-DETECTOR_URL = os.getenv("DETECTOR_URL", "http://detector:5000/api/detect")
+DETECTOR_URL = os.getenv("DETECTOR_URL").strip()
 
 app = Flask(__name__)
 
