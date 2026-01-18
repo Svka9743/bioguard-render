@@ -1,46 +1,76 @@
-import sys, os
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-
 from flask import Flask, request, jsonify
-import os, joblib, torch
+import torch
+import joblib
+import numpy as np
+import requests
+import os
 from model.model import Autoencoder
 
 app = Flask(__name__)
-THRESHOLD = float(os.getenv("ANOMALY_THRESHOLD", "0.02"))
 
-# load scaler & model (assumes files are in repo/model/)
-scaler = joblib.load("model/scaler.pkl")
+# Paths
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+MODEL_DIR = os.path.join(BASE_DIR, "..", "model")
+
+scaler_path = os.path.join(MODEL_DIR, "scaler.pkl")
+model_path = os.path.join(MODEL_DIR, "autoencoder.pth")
+
+# Load model + scaler
+scaler = joblib.load(scaler_path)
+
 model = Autoencoder(input_dim=12)
-model.load_state_dict(torch.load("model/autoencoder.pth", map_location="cpu"))
+model.load_state_dict(torch.load(model_path, map_location="cpu"))
 model.eval()
+
+# Environment variables
+THRESHOLD = float(os.getenv("ANOMALY_THRESHOLD", "1.0"))
+AUTOMATION_WEBHOOK = os.getenv("AUTOMATION_WEBHOOK")
+
+print("Automation webhook:", AUTOMATION_WEBHOOK)
 
 def anomaly_score(features):
     x = scaler.transform([features])
-    x_t = torch.tensor(x, dtype=torch.float32)
+    xt = torch.tensor(x, dtype=torch.float32)
+
     with torch.no_grad():
-        out = model(x_t)
-        mse = torch.mean((out - x_t) ** 2).item()
+        out = model(xt)
+        mse = torch.mean((out - xt) ** 2).item()
+
     return mse
+
 
 @app.route("/api/detect", methods=["POST"])
 def detect():
     data = request.get_json()
-    feats = data.get("features")
+
+    feats = np.array(data["features"], dtype=float)
     meta = data.get("meta", {})
+
     score = anomaly_score(feats)
-    out = {"score": score, "threshold": THRESHOLD, "meta": meta}
-    if score > THRESHOLD:
-        out["anomaly"] = True
-        webhook = os.getenv("AUTOMATION_WEBHOOK")
-        if webhook:
-            try:
-                import requests
-                requests.post(webhook, json={"source": meta, "score": score}, timeout=3)
-            except Exception as e:
-                app.logger.error("Failed to call automation: %s", e)
-    else:
-        out["anomaly"] = False
-    return jsonify(out)
+
+    anomaly = score > THRESHOLD
+
+    response = {
+        "score": score,
+        "threshold": THRESHOLD,
+        "anomaly": anomaly,
+        "meta": meta
+    }
+
+    # CALL AUTOMATION SERVICE
+    if anomaly and AUTOMATION_WEBHOOK:
+        try:
+            r = requests.post(
+                AUTOMATION_WEBHOOK,
+                json=response,
+                timeout=10
+            )
+            print("Automation response:", r.status_code, r.text)
+        except Exception as e:
+            print("Automation error:", e)
+
+    return jsonify(response)
+
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000)
+    app.run(host="0.0.0.0", port=10000)
