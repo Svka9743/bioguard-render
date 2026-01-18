@@ -58,7 +58,7 @@ def detect():
     }
 
     # CALL AUTOMATION SERVICE
-    if anomaly and AUTOMATION_WEBHOOK:
+    if AUTOMATION_WEBHOOK:
         try:
             r = requests.post(
                 AUTOMATION_WEBHOOK,
