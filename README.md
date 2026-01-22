@@ -2,7 +2,7 @@
 
 
 
-This project implements a simple end-to-end IDS pipeline:
+This project implements a end-to-end IDS pipeline:
 
 
 
