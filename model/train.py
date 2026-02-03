@@ -3,8 +3,8 @@ from sklearn.preprocessing import StandardScaler
 from torch.utils.data import TensorDataset, DataLoader
 from model import Autoencoder
 
-# create synthetic normal data (10000 samples, feature dim = 12)
-X = np.random.normal(loc=0.0, scale=1.0, size=(10000, 12))
+# create synthetic normal data (10000 samples, feature dim = 13)
+X = np.random.normal(loc=0.0, scale=1.0, size=(10000, 13))
 np.save("normal_data.npy", X)
 
 scaler = StandardScaler()
@@ -15,7 +15,7 @@ Xtensor = torch.tensor(Xs, dtype=torch.float32)
 dataset = TensorDataset(Xtensor, Xtensor)
 loader = DataLoader(dataset, batch_size=128, shuffle=True)
 
-model = Autoencoder(input_dim=12)
+model = Autoencoder(input_dim=13)
 optimizer = torch.optim.Adam(model.parameters(), lr=1e-3)
 loss_fn = torch.nn.MSELoss()
 
