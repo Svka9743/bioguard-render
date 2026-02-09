@@ -1,5 +1,4 @@
 import os
-print("MODEL FILES:", os.listdir("../model"))
 from flask import Flask, request, jsonify
 import torch
 import joblib
