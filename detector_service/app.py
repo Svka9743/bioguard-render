@@ -19,11 +19,14 @@ model_path = os.path.join(MODEL_DIR, "autoencoder.pth")
 # Load model + scaler
 scaler = joblib.load(scaler_path)
 
-model = Autoencoder(input_dim = 13)
+state_dict = torch.load(model_path, map_location="cpu")
 
-print("Autoencoder input dim =", model.encoder[0].in_features)
+# Infer input dimension from checkpoint
+in_dim = state_dict["encoder.0.weight"].shape[1]
+print("Inferred input_dim from checkpoint =", in_dim)
 
-model.load_state_dict(torch.load(model_path, map_location="cpu"))
+model = Autoencoder(input_dim=in_dim)
+model.load_state_dict(state_dict)
 model.eval()
 
 # Environment variables
@@ -48,6 +51,11 @@ def detect():
     data = request.get_json()
 
     feats = np.array(data["features"], dtype=float)
+    if len(feats) != model.encoder[0].in_features:
+        return jsonify({
+            "error": f"Expected {model.encoder[0].in_features} features, got {len(feats)}"
+    }), 400
+
     meta = data.get("meta", {})
 
     score = anomaly_score(feats)
