@@ -2,7 +2,8 @@ from flask import Flask, request, jsonify
 from feature_extractor import extract_features
 import requests
 
-DETECTOR_URL = "https://bioguard-detector.onrender.com/api/detect"
+DETECTOR_URL = "https://bioguard-detector-de7p.onrender.com/api/detect"
+
 
 app = Flask(__name__)
 
@@ -18,12 +19,7 @@ def ingest():
             feats = extract_features(e)
 
             payload = {
-                "features": feats.tolist(),
-                "meta": {
-                    "src": e.get("src_ip"),
-                    "dest": e.get("dest_ip"),
-                    "timestamp": e.get("timestamp")
-                }
+                "features": feats.tolist()
             }
 
             r = requests.post(
