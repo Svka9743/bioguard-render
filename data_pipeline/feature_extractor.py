@@ -69,6 +69,10 @@ def extract_features(eve_json):
         + proto_enc
         + tod
         + [flow_bytes]
+
     )
+
+    while len(feats) < 13:
+        feats.append(0)
 
     return np.array(feats, dtype=float)

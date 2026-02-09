@@ -1,6 +1,7 @@
 flask
 requests
-torch
+torch==2.2.2+cpu
+--extra-index-url https://download.pytorch.org/whl/cpu
 joblib
 scikit-learn==1.7.2
 numpy

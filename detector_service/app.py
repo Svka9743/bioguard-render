@@ -1,3 +1,5 @@
+import os
+print("MODEL FILES:", os.listdir("../model"))
 from flask import Flask, request, jsonify
 import torch
 import joblib
@@ -18,7 +20,10 @@ model_path = os.path.join(MODEL_DIR, "autoencoder.pth")
 # Load model + scaler
 scaler = joblib.load(scaler_path)
 
-model = Autoencoder(input_dim=12)
+model = Autoencoder(input_dim = 13)
+
+print("Autoencoder input dim =", model.encoder[0].in_features)
+
 model.load_state_dict(torch.load(model_path, map_location="cpu"))
 model.eval()
 

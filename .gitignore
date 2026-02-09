@@ -3,9 +3,6 @@ __pycache__/
 *.pyc
 
 # ML artifacts
-*.pth
-*.pkl
-*.npy
 
 # Local datasets
 eve.json
