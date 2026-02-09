@@ -9,7 +9,7 @@ X = np.load("model/normal_data.npy")
 
 # Load scaler and model
 scaler = joblib.load("model/scaler.pkl")
-model = Autoencoder(input_dim=12)
+model = Autoencoder(input_dim=13)
 model.load_state_dict(torch.load("model/autoencoder.pth", map_location="cpu"))
 model.eval()
 
