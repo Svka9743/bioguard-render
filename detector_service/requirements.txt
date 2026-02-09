@@ -1,9 +1,9 @@
 flask
 requests
-torch==2.2.2+cpu
+torch==2.5.1+cpu
 --extra-index-url https://download.pytorch.org/whl/cpu
 joblib
-scikit-learn==1.7.2
+scikit-learn
 numpy
 gunicorn
 psycopg2-binary
